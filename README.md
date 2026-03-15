@@ -18,7 +18,7 @@ This app tracks **course assignments and deadlines** with **estimated hours** so
 | `course_name`   | TEXT    | Required. Name of the course or assignment.     |
 | `deadline`      | TEXT    | Due date (flexible input, stored as YYYY-MM-DD).|
 | `est_hours`     | REAL    | User-entered expected duration in hours.        |
-| `urgency_score` | TEXT    | System-computed: `1-HIGH`, `2-MEDIUM`, or `3-LOW`. |
+| `urgency_score` | TEXT    | System-computed: `HIGH`, `MEDIUM`, or `LOW`. |
 
 ---
 
