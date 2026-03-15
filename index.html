@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Academic Planner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0e;
+      --bg-mesh: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(124, 138, 255, 0.15), transparent),
+                 radial-gradient(ellipse 60% 40% at 100% 50%, rgba(74, 222, 128, 0.06), transparent),
+                 radial-gradient(ellipse 50% 30% at 0% 80%, rgba(232, 185, 35, 0.06), transparent);
+      --bg-elevated: rgba(20, 20, 26, 0.85);
+      --surface: rgba(26, 26, 34, 0.9);
+      --surface-hover: rgba(34, 34, 44, 0.95);
+      --border: rgba(255, 255, 255, 0.08);
+      --border-focus: rgba(124, 138, 255, 0.5);
+      --text: #f2f2f7;
+      --text-muted: #8e8e9a;
+      --high: #ff6b6b;
+      --high-bg: rgba(255, 107, 107, 0.12);
+      --medium: #ffd43b;
+      --medium-bg: rgba(255, 212, 59, 0.12);
+      --low: #51cf66;
+      --low-bg: rgba(81, 207, 102, 0.12);
+      --accent: #7c8aff;
+      --accent-hover: #9aa4ff;
+      --radius: 14px;
+      --radius-sm: 10px;
+      --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      --transition: 0.2s ease;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      font-family: "DM Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      background-image: var(--bg-mesh);
+      color: var(--text);
+      margin: 0;
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    .layout {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem;
+    }
+
+    .header {
+      margin-bottom: 2.5rem;
+      text-align: center;
+    }
+    .header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin: 0;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, #fff 0%, var(--text-muted) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .header p {
+      margin: 0.5rem 0 0 0;
+      color: var(--text-muted);
+      font-size: 1rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      gap: 2rem;
+      align-items: start;
+    }
+    @media (max-width: 820px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: var(--bg-elevated);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.75rem;
+      box-shadow: var(--shadow);
+    }
+    .card-title {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      margin: 0 0 1.25rem 0;
+    }
+
+    .form-row {
+      margin-bottom: 1rem;
+    }
+    .form-row:last-of-type { margin-bottom: 1.25rem; }
+    .form-row label {
+      display: block;
+      margin-bottom: 0.4rem;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+    .form-row input {
+      width: 100%;
+      padding: 0.7rem 1rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      font-size: 0.95rem;
+      font-family: inherit;
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+    .form-row input::placeholder { color: var(--text-muted); opacity: 0.6; }
+    .form-row input:focus {
+      outline: none;
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px rgba(124, 138, 255, 0.15);
+    }
+    .form-hint {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.35rem;
+      opacity: 0.9;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      padding: 0.65rem 1.2rem;
+      border-radius: var(--radius-sm);
+      border: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background var(--transition), border-color var(--transition), transform 0.12s ease;
+    }
+    .btn:active { transform: scale(0.98); }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent) 0%, #6b7ae8 100%);
+      color: #fff;
+    }
+    .btn-primary:hover { filter: brightness(1.08); }
+    .btn-ghost {
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { background: var(--surface-hover); border-color: rgba(255,255,255,0.12); }
+    .btn-danger {
+      background: transparent;
+      color: var(--high);
+      border: 1px solid var(--high);
+    }
+    .btn-danger:hover { background: var(--high-bg); }
+    .btn-sm { padding: 0.45rem 0.85rem; font-size: 0.8rem; }
+
+    .sort-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .sort-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+    .sort-pills {
+      display: flex;
+      gap: 0.35rem;
+      background: var(--surface);
+      padding: 0.35rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+    }
+    .sort-pills .btn {
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      padding: 0.5rem 1rem;
+    }
+    .sort-pills .btn:hover { color: var(--text); background: var(--surface-hover); }
+    .sort-pills .btn.active {
+      background: var(--accent);
+      color: #fff;
+    }
+    .sort-pills .btn.active:hover { filter: brightness(1.1); color: #fff; }
+
+    .tasks-wrap {
+      background: var(--bg-elevated);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+    .tasks-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .tasks-table th {
+      text-align: left;
+      padding: 0.9rem 1.25rem;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+    }
+    .tasks-table td {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.95rem;
+      vertical-align: middle;
+    }
+    .tasks-table tbody tr { transition: background var(--transition); }
+    .tasks-table tbody tr:hover { background: var(--surface); }
+    .tasks-table tbody tr:last-child td { border-bottom: none; }
+    .col-num { width: 3rem; font-variant-numeric: tabular-nums; color: var(--text-muted); font-weight: 600; }
+    .col-course { font-weight: 500; }
+    .col-deadline { color: var(--text-muted); }
+    .col-hours { text-align: right; color: var(--text-muted); }
+    .col-urgency { padding-left: 1rem; }
+    .col-actions { white-space: nowrap; }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.4rem 0.85rem;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+    .badge-high { background: var(--high-bg); color: var(--high); }
+    .badge-medium { background: var(--medium-bg); color: var(--medium); }
+    .badge-low { background: var(--low-bg); color: var(--low); }
+
+    .actions-cell { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .actions-cell .btn { margin: 0; }
+
+    .inline-edit {
+      display: none;
+      align-items: center;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+    }
+    .inline-edit.visible { display: inline-flex; }
+    .inline-edit input {
+      width: 4.5rem;
+      padding: 0.4rem 0.5rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      font-size: 0.9rem;
+      font-family: inherit;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3.5rem 2rem;
+      color: var(--text-muted);
+    }
+    .empty-state svg {
+      width: 56px;
+      height: 56px;
+      margin-bottom: 1.25rem;
+      opacity: 0.4;
+    }
+    .empty-state p { margin: 0; font-size: 0.95rem; }
+
+    .toast {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      padding: 0.9rem 1.35rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.9rem;
+      font-weight: 500;
+      box-shadow: var(--shadow);
+      z-index: 100;
+      animation: slideIn 0.35s ease;
+    }
+    .toast.success { background: var(--low-bg); color: var(--low); border: 1px solid rgba(81, 207, 102, 0.25); }
+    .toast.error { background: var(--high-bg); color: var(--high); border: 1px solid rgba(255, 107, 107, 0.25); }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .date-fancy { font-variant-numeric: tabular-nums; }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <header class="header">
+      <h1>To-Do List Planner</h1>
+      <p>Course Tasks & Deadlines</p>
+    </header>
+
+    <div class="grid">
+      <aside class="card">
+        <h2 class="card-title">New assignment</h2>
+        <form id="addForm">
+          <div class="form-row">
+            <label for="course_name">Course name</label>
+            <input type="text" id="course_name" name="course_name" required placeholder="e.g. CS 101">
+          </div>
+          <div class="form-row">
+            <label for="deadline">Deadline</label>
+            <input type="text" id="deadline" name="deadline" required placeholder="Mar 15 or 03-15">
+            <p class="form-hint">Example: March 15, Mar 15, 03/15, 3/15</p>
+          </div>
+          <div class="form-row">
+            <label for="est_hours">Expected hours</label>
+            <input type="number" id="est_hours" name="est_hours" required min="0" step="0.5" placeholder="8">
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%;">Add task</button>
+        </form>
+      </aside>
+
+      <main>
+        <div class="sort-wrap">
+          <span class="sort-label">Sort by</span>
+          <div class="sort-pills" role="group" aria-label="Sort order">
+            <button type="button" class="btn active" data-sort="deadline" title="Earliest first">Date</button>
+            <button type="button" class="btn" data-sort="urgency" title="Most urgent first">Urgency</button>
+          </div>
+          <span id="serverDate" class="sort-label" style="margin-left: auto; font-weight: 400;"></span>
+        </div>
+
+        <div class="tasks-wrap">
+          <div id="tableWrap">
+            <table class="tasks-table">
+              <thead>
+                <tr>
+                  <th class="col-num">#</th>
+                  <th>Course</th>
+                  <th>Deadline</th>
+                  <th class="col-hours">Hours</th>
+                  <th class="col-urgency">Urgency</th>
+                  <th class="col-actions">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="taskList"></tbody>
+            </table>
+          </div>
+          <div id="emptyState" class="empty-state">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            </svg>
+            <p>No tasks yet. Add one to get started.</p>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" role="alert" aria-live="polite" style="display: none;"></div>
+
+  <script>
+    const taskList = document.getElementById('taskList');
+    const emptyState = document.getElementById('emptyState');
+    const addForm = document.getElementById('addForm');
+    const toastEl = document.getElementById('toast');
+    let sortBy = 'deadline';
+
+    const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+    function formatDate(iso) {
+      if (!iso) return '—';
+      const m = iso.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+      if (!m) return iso;
+      const [, y, mo, d] = m;
+      const month = MONTHS[parseInt(mo, 10) - 1];
+      return month + ' ' + parseInt(d, 10) + ', ' + y;
+    }
+
+    function urgencyClass(score) {
+      if (!score) return 'badge-low';
+      if (String(score).includes('HIGH')) return 'badge-high';
+      if (String(score).includes('MEDIUM')) return 'badge-medium';
+      return 'badge-low';
+    }
+
+    function urgencyLabel(score) {
+      if (!score) return 'LOW';
+      if (String(score).includes('HIGH')) return 'HIGH';
+      if (String(score).includes('MEDIUM')) return 'MEDIUM';
+      return 'LOW';
+    }
+
+    function showToast(message, isError) {
+      toastEl.textContent = message;
+      toastEl.className = 'toast ' + (isError ? 'error' : 'success');
+      toastEl.style.display = 'block';
+      clearTimeout(toastEl._t);
+      toastEl._t = setTimeout(() => { toastEl.style.display = 'none'; }, 3500);
+    }
+
+    function escapeHtml(s) {
+      const div = document.createElement('div');
+      div.textContent = s;
+      return div.innerHTML;
+    }
+
+    async function loadTasks() {
+      try {
+        const res = await fetch('/api/tasks?sort=' + sortBy);
+        if (!res.ok) throw new Error('Failed to load tasks');
+        const data = await res.json();
+        const tasks = Array.isArray(data) ? data : (data.tasks || []);
+        const serverDate = data.server_date || '';
+        renderTasks(tasks, serverDate);
+      } catch (e) {
+        showToast(e.message || 'Could not load tasks', true);
+      }
+    }
+
+    function renderTasks(tasks, serverDate) {
+      taskList.innerHTML = '';
+      const hasTasks = tasks.length > 0;
+      emptyState.style.display = hasTasks ? 'none' : 'block';
+      document.getElementById('tableWrap').style.display = hasTasks ? 'block' : 'none';
+      var dateEl = document.getElementById('serverDate');
+      if (dateEl) dateEl.textContent = serverDate ? 'Urgency as of ' + formatDate(serverDate) : '';
+
+      tasks.forEach((t, index) => {
+        const rowNum = index + 1;
+        const urg = t.urgency_score || '';
+        const tr = document.createElement('tr');
+        tr.dataset.id = t.id;
+        tr.innerHTML =
+          '<td class="col-num">' + rowNum + '</td>' +
+          '<td class="col-course">' + escapeHtml(t.course_name || '') + '</td>' +
+          '<td class="col-deadline date-fancy">' + escapeHtml(formatDate(t.deadline)) + '</td>' +
+          '<td class="col-hours">' + (t.est_hours != null ? t.est_hours + ' h' : '—') + '</td>' +
+          '<td class="col-urgency"><span class="badge ' + urgencyClass(urg) + '">' + urgencyLabel(urg) + '</span></td>' +
+          '<td class="col-actions"><div class="actions-cell">' +
+            '<button type="button" class="btn btn-ghost btn-sm" data-update="' + t.id + '">Edit hours</button>' +
+            '<span class="inline-edit" id="edit-' + t.id + '">' +
+              '<input type="number" min="0" step="0.5" placeholder="hours" aria-label="New hours">' +
+              '<button type="button" class="btn btn-primary btn-sm save-edit" data-id="' + t.id + '">Save</button>' +
+              '<button type="button" class="btn btn-ghost btn-sm cancel-edit" data-id="' + t.id + '">Cancel</button>' +
+            '</span>' +
+            '<button type="button" class="btn btn-danger btn-sm" data-delete="' + t.id + '">Delete</button>' +
+          '</div></td>';
+        taskList.appendChild(tr);
+      });
+
+      taskList.querySelectorAll('[data-update]').forEach(btn => {
+        btn.onclick = () => {
+          taskList.querySelectorAll('.inline-edit').forEach(e => e.classList.remove('visible'));
+          const editEl = document.getElementById('edit-' + btn.dataset.update);
+          if (editEl) {
+            editEl.classList.add('visible');
+            editEl.querySelector('input').focus();
+          }
+        };
+      });
+
+      taskList.querySelectorAll('.cancel-edit').forEach(btn => {
+        btn.onclick = () => {
+          const el = document.getElementById('edit-' + btn.dataset.id);
+          if (el) el.classList.remove('visible');
+        };
+      });
+
+      taskList.querySelectorAll('.save-edit').forEach(btn => {
+        btn.onclick = async () => {
+          const row = btn.closest('tr');
+          const input = row.querySelector('.inline-edit input');
+          const hours = parseFloat(input.value);
+          if (isNaN(hours) || hours < 0) {
+            showToast('Enter a valid number of hours.', true);
+            return;
+          }
+          try {
+            const res = await fetch('/api/tasks/' + btn.dataset.id, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ est_hours: hours })
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Update failed');
+            document.getElementById('edit-' + btn.dataset.id).classList.remove('visible');
+            showToast('Hours updated. Urgency: ' + (data.urgency_score || ''), false);
+            loadTasks();
+          } catch (e) {
+            showToast(e.message, true);
+          }
+        };
+      });
+
+      taskList.querySelectorAll('[data-delete]').forEach(btn => {
+        btn.onclick = async () => {
+          if (!confirm('Delete this task? This cannot be undone.')) return;
+          try {
+            const res = await fetch('/api/tasks/' + btn.dataset.delete, { method: 'DELETE' });
+            if (!res.ok) throw new Error('Delete failed');
+            showToast('Task deleted.', false);
+            loadTasks();
+          } catch (e) {
+            showToast(e.message, true);
+          }
+        };
+      });
+    }
+
+    addForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const fd = new FormData(addForm);
+      const body = {
+        course_name: (fd.get('course_name') || '').trim(),
+        deadline: (fd.get('deadline') || '').trim(),
+        est_hours: parseFloat(fd.get('est_hours'))
+      };
+      if (isNaN(body.est_hours)) {
+        showToast('Hours must be a number.', true);
+        return;
+      }
+      try {
+        const res = await fetch('/api/tasks', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Failed to add');
+        showToast('Task added. Urgency: ' + (data.urgency_score || ''), false);
+        addForm.reset();
+        document.getElementById('course_name').focus();
+        loadTasks();
+      } catch (e) {
+        showToast(e.message, true);
+      }
+    });
+
+    document.querySelectorAll('[data-sort]').forEach(btn => {
+      btn.onclick = () => {
+        sortBy = btn.dataset.sort;
+        document.querySelectorAll('.sort-pills .btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        loadTasks();
+      };
+    });
+
+    loadTasks();
+  </script>
+</body>
+</html>
